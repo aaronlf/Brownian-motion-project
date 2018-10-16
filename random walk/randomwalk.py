@@ -19,21 +19,6 @@ class RandomWalk:
 	- By calling the plot_monte_carlo() method, one can plot a Monte Carlo simulation of the
 	  random walk. Two graphs can be plotted: A histogram (optional) with N on the y-axis, and/or
 	  a normalised version of this (all N-values divided by n) that resembles a pdf.
-	  
-	  
-	EXAMPLE USAGE:
-	
-	 from randomwalk import RandomWalk
-	
-	 rw = RandomWalk(p=0.6,n=100)
-	
-	 print(rw.variance)                       #Get the variance of the random walk object
-	 print(rw.mean)                           #Get the mean of the random walk object
-	 
-	 rw.plot_distribution()                   #Plot the probability distribution
-	 print(rw.get_confidence_interval(-2,1))  #Get the probability that x_n is between -2 and 1
-	 rw.plot_monte_carlo(histogram=False)     #Run a Monte-Carlo simulation and plot results
-	 
 	"""
 	
 	def __init__(self,p,n,delta_x=1,x_initial=0):
@@ -103,7 +88,7 @@ class RandomWalk:
 		plt.xlabel("x\u2099 - Position after n jumps")
 		plt.ylabel("Frequency")
 		plt.suptitle("Monte Carlo Simulation of Random Walk: p={}, n={}, \u0394x={}, N={}".format(
-													self.p,self.n,self.delta_x,number_of_trials))
+										self.p,self.n,self.delta_x,number_of_trials))
 		plt.show()
 		return trial_data
 			
