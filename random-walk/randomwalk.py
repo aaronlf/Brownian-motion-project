@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 class RandomWalk:
 	"""
 	Each RandomWalk instance is an object of the random walk model that can be created requiring 
-	only the values of n, p , delta_x  and x_naught (delta_x is 1 by default and x_initial is 0).
+	only the values of n, p , delta_x  and x_initial (delta_x is 1 by default and x_initial is 0).
 	
 	- By calling the plot_distribution() method, one can plot the random walk's probability 
 	  distribution.
