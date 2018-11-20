@@ -10,9 +10,12 @@ rw = RandomWalk2D(n=200)
 
 
 # ~~~  DRAW REAL RANDOM WALK SIMULATION (STATIC GRAPH OR LIVE ANIMATION) ~~~ ##
-topview = rw.random_walk_draw(50,animated=True,projection='2d')
-view_3d = rw.random_walk_draw(50,animated=True,projection='3d')
+rw.random_walk_draw(50,animated=True,projection='2d')
+rw.random_walk_draw(50,animated=True,projection='3d')
 
 
 
-plt.show()
+# Note: There is a bug preventing plt.show() to display 2 graphs if plt.show() is at the the end.
+# It must be called individually in each random_walk_draw() call, as above.
+
+# plt.show()

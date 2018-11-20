@@ -40,7 +40,7 @@ class RandomWalk2D(RandomWalk):
 		- show: If true, plt.show() will be called for each figure, one at a time.
 		- overlay: If true, the theoretical pdf will be plotted on top of the Monte Carlo trial
 		"""
-		
+		"""
 		trial_data = []
 		for _ in range(number_of_trials):
 			x_steps,y_steps = self._random_walk_simulation()
@@ -73,7 +73,8 @@ class RandomWalk2D(RandomWalk):
 			plt.show()		
 								
 		return trial_data
-		
+		"""
+		pass
 		
 	def random_walk_draw(self,num_plots,animated=False,show=True,projection='2d'):
 		"""This method draws an animated 2D random walk simulation.
