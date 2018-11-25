@@ -17,6 +17,13 @@ timesteps = np.arange(0,t_max,dt)
 
 
 
+def main():
+	gbm_arr = plot_gbm(number_of_sims=200)
+	compare_mu_vals(gbm_arr)
+	compare_sigma_vals(gbm_arr)
+	plt.show()
+	
+	
 def random_term():
 	return ((mu - ((sigma)**2)/2) * dt) + (sigma * (np.sqrt(dt)) * random.gauss(0,1))
 
@@ -32,7 +39,7 @@ def gbm_sim(s_init):
 	random_terms = get_all_random_terms()
 	s_vals = [s_init]
 	s_new = s_init
-	for i,r_term in enumerate(random_terms):
+	for r_term in random_terms:
 		s_new = s_new * (np.exp(r_term))
 		s_vals.append(s_new)
 	return s_vals	
@@ -54,8 +61,8 @@ def compare_mu_vals(gbm_array):
 	computed_mu_vals = []
 	for step in np.arange(1,number_of_steps):
 		vals = []
-		for i in range(len(gbm_arr)):
-			vals.append(gbm_arr[i][step])
+		for i in range(len(gbm_array)):
+			vals.append(gbm_array[i][step])
 		expected_val = np.average(vals)
 		computed_mu_vals.append( (np.log(expected_val) - np.log(s_initial)) / (step*dt) )
 	computed_mu = np.mean(computed_mu_vals)
@@ -66,8 +73,8 @@ def compare_sigma_vals(gbm_array):
 	computed_sigma_vals = []
 	for step in np.arange(1,number_of_steps):
 		vals = []
-		for i in range(len(gbm_arr)):
-			vals.append(gbm_arr[i][step])
+		for i in range(len(gbm_array)):
+			vals.append(gbm_array[i][step])
 		expected_val = np.average(vals)
 		variance = np.var(vals)
 		computed_sigma_vals.append(np.sqrt(np.log((variance/((expected_val)**2))+1)/(step*dt)))
@@ -76,7 +83,5 @@ def compare_sigma_vals(gbm_array):
 	
 
 
-gbm_arr = plot_gbm(number_of_sims=100)
-compare_mu_vals(gbm_arr)
-compare_sigma_vals(gbm_arr)
-plt.show()
+if __name__ == "__main__":
+	main()
