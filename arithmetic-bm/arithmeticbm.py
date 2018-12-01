@@ -18,7 +18,10 @@ timesteps = np.arange(0,t_max,dt)
 
 
 def main():
-	abm_arr = plot_abm(number_of_sims=100)
+	number_of_sims=100
+	abm_arr = plot_abm(number_of_sims)
+	print("\nArithmetic Brownian Motion Simuation\n")
+	print("Number of Monte Carlo trials, n = {}\n".format(number_of_sims))
 	compare_mu_vals(abm_arr)
 	compare_sigma_vals(abm_arr)
 	plt.show()
@@ -66,7 +69,12 @@ def compare_mu_vals(abm_array):
 		expected_val = np.average(vals)
 		computed_mu_vals.append( ((expected_val) - x_initial) / (step*dt) )
 	computed_mu = np.mean(computed_mu_vals)
+	mu_std = np.std(computed_mu_vals)
+	mu_mrg_err = 1.959964 * mu_std / np.sqrt(len(abm_array))
 	print("μ given: {}	Average μ found: {}".format(mu,round(computed_mu,4)))
+	print("95% CI Margin of error of μ results: {}".format(round(mu_mrg_err,6)))
+	print("95% confidence interval range: [{},{}]\n".format(
+							round(computed_mu - mu_mrg_err,4), round(computed_mu + mu_mrg_err,4)))
 		
 		
 def compare_sigma_vals(abm_array):
@@ -78,8 +86,12 @@ def compare_sigma_vals(abm_array):
 		variance = np.var(vals)
 		computed_sigma_vals.append( np.sqrt(variance/(step*dt)) )
 	computed_sigma = np.mean(computed_sigma_vals)
+	sigma_std = np.std(computed_sigma_vals)
+	sigma_mrg_err = 1.959964 * sigma_std / np.sqrt(len(abm_array))
 	print("σ given: {}	Average σ found: {}".format(sigma,round(computed_sigma,4)))
-	
+	print("95% CI Margin of error of σ results: {}".	format(round(sigma_mrg_err,6)))
+	print("95% confidence interval range: [{},{}]\n".format(
+				round(computed_sigma - sigma_mrg_err,5), round(computed_sigma + sigma_mrg_err,5)))
 
 
 if __name__ == "__main__":
