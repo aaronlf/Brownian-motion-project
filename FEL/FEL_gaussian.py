@@ -52,12 +52,12 @@ class Temporal:
 			e_vals.append(self.incoherent_rad(t,tj,sigma,omega,bunch_length))
 		return {'x_vals':time_vals,'y_vals':e_vals,'label':'\u03C3 = {}, \u03C9 = {}'.format(sigma,omega)}
 		
-	def get_superposition(self,coherent_vals_list):
-		output_vals = np.zeros(shape=len(coherent_vals_list[0]['y_vals']))
-		for coherent_vals in coherent_vals_list:
-			output_vals += np.array(coherent_vals['y_vals'])
+	def get_superposition(self,incoherent_vals_list):
+		output_vals = np.zeros(shape=len(incoherent_vals_list[0]['y_vals']))
+		for incoherent_vals in incoherent_vals_list:
+			output_vals += np.array(incoherent_vals['y_vals'])
 		return {
-				'x_vals':coherent_vals_list[0]['x_vals'],
+				'x_vals':incoherent_vals_list[0]['x_vals'],
 				'y_vals':output_vals,
 				'label':None
 				}
@@ -78,6 +78,26 @@ class Temporal:
 		return M_L
 
 
+	def incoherent_rad_omega(self,tj,sigma,omega,bunch_length,omega1=None):
+		if omega1 == None:
+			omega1 = self.omega
+		sigma_FT = 1/(2*sigma)
+		return (np.exp(-((omega-omega1)**2)/(4*(sigma_FT**2))) * np.cos(omega*tj)) * (np.sqrt(np.pi)/sigma_FT) 
+	
+	def model_incoherent_rad_once_omega(self,bunch_length,sigma=None,omega1=None):
+		if sigma == None:
+			sigma = self.sigma
+		if omega1 == None:
+			omega1 = self.omega
+		omega_vals = np.linspace(omega1-1,omega1+1,5000)
+		e_vals = []
+		tj = random.uniform(-(bunch_length*0.5),(bunch_length*0.5))
+		for omega in omega_vals:
+			e_vals.append(self.incoherent_rad_omega(tj,sigma,omega,bunch_length))
+		delta_omega_vals = omega_vals - omega1
+		return {'x_vals':delta_omega_vals,'y_vals':e_vals,'label':'\u03C3 = {}, \u03C9$_1 = {}'.format(sigma,omega1)}
+		
+						
 #---------------------------------------------------------------------------------------------------
 
 
@@ -131,7 +151,7 @@ def SHOW_COHERENT_RADIATION():
 	coherent_vals0 = temp.model_coherent_rad_once()
 	coherent_vals1 = temp.model_coherent_rad_once()
 	plot_graph([coherent_vals0,coherent_vals1],'Coherent Radiation','Coherent Radiation','t',
-				'E/e','coherent_radiation')
+				'E/e$_0$','coherent_radiation')
 	
 	
 def SHOW_INCOHERENT_RADIATION(num_pulses,bunch_length=100,subplots=True,plot_superposition=True,plot_intensity=True):
@@ -145,7 +165,7 @@ def SHOW_INCOHERENT_RADIATION(num_pulses,bunch_length=100,subplots=True,plot_sup
 	if plot_superposition == True:
 		plot_graph([superposition_pulses],'Incoherent Radiation',
 					'Incoherent Radiation: Superposition of {} pulses'.format(num_pulses),
-					'time','E/e','incoherent_radiation_superposition_{}_pulses'.format(num_pulses))
+					'time','E/e$_0$','incoherent_radiation_superposition_{}_pulses'.format(num_pulses))
 	
 	intensity = temp.get_intensity(superposition_pulses)
 	if plot_intensity == True:
@@ -177,6 +197,25 @@ def INCOHERENT_AVERAGE_INTENSITY_VS_NUM_SOURCES(bunch_length=100):
 					'average_intensity_vs_num_pulses',scatter=True)
 	
 	
+def SHOW_INCOHERENT_RADIATION_OMEGA(num_pulses,bunch_length=100,plot_superposition=True,plot_intensity=True):
+	
+	incoherent_vals_list_omega = [temp.model_incoherent_rad_once_omega(bunch_length) for i in range(num_pulses)]
+		
+	superposition_pulses_omega = temp.get_superposition(incoherent_vals_list_omega)
+	if plot_superposition == True:
+		plot_graph([superposition_pulses_omega],'Incoherent Radiation',
+					'Incoherent Radiation: Superposition of {} pulses in terms of \u03C9'.format(num_pulses),
+					'\u03C9 - \u03C9$_1$','E/e$_0$','omega_incoherent_radiation_superposition_{}_pulses'.format(num_pulses))
+	#'E\u03C3/e$_0\sqrt{\u03C0}$'
+	intensity = temp.get_intensity(superposition_pulses_omega)
+	if plot_intensity == True:
+		plot_graph([intensity],'Incoherent Radiation Intensity Spectrum',
+					'Incoherent Radiation: Intensity spectrum for {} pulses in terms of \u03C9'.format(num_pulses),
+					'\u03C9 - \u03C9$_1$','P(\u03C9)','omega_intensity_incoherent_radiation_{}_pulses'.format(num_pulses))
+	
+	temp.get_num_l_modes(bunch_length)
+		
+
 #---------------------------------------------------------------------------------------------------
 	
 	
@@ -184,5 +223,5 @@ if __name__ == '__main__':
 	#SHOW_COHERENT_RADIATION()
 	SHOW_INCOHERENT_RADIATION(100,subplots=True,plot_superposition=True,plot_intensity=True)
 	#INCOHERENT_AVERAGE_INTENSITY_VS_NUM_SOURCES()
-	
+	SHOW_INCOHERENT_RADIATION_OMEGA(100,plot_superposition=True,plot_intensity=True)
 
