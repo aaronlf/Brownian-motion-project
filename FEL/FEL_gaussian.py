@@ -17,7 +17,25 @@ fig_size[1] = 9
 plt.rcParams["figure.figsize"] = fig_size
 
 
+#---------------------------------------------------------------------------------------------------
+### 									MAIN FUNCTION 											 ###
+#---------------------------------------------------------------------------------------------------
+
+def main():
+	#SHOW_COHERENT_RADIATION()
+	#SHOW_INCOHERENT_RADIATION(100,subplots=True,plot_superposition=True,plot_intensity=True)
+	#INCOHERENT_AVERAGE_INTENSITY_VS_NUM_SOURCES()
+	#SHOW_INCOHERENT_RADIATION_OMEGA(100,plot_superposition=True,plot_intensity=True)
+	MONTE_CARLO_INTENSITY_TIME(num_trials=1,num_pulses=500,bunch_length=100)
+	MONTE_CARLO_INTENSITY_OMEGA(num_trials=1,num_pulses=500,bunch_length=100)
+	
+	
+#---------------------------------------------------------------------------------------------------
+### 					CLASS TO DEMONSTRATE TEMPORAL COHERENCE/INCOHERECE 						 ###
+#---------------------------------------------------------------------------------------------------	
+	
 class Temporal:
+	
 	def __init__(self,sigma,omega):
 		self.sigma = sigma
 		self.omega = omega
@@ -35,7 +53,6 @@ class Temporal:
 		for t in time_vals:
 			e_vals.append(self.coherent_rad(t,sigma,omega))
 		return {'x_vals':time_vals,'y_vals':e_vals,'label':'\u03C3 = {}, \u03C9 = {}'.format(sigma,omega)}
-
 
 	def incoherent_rad(self,t,tj,sigma,omega,bunch_length):
 		return np.exp(-((t-tj)**2)/(4*(sigma**2))) * np.cos(omega*(t-tj))
@@ -74,9 +91,7 @@ class Temporal:
 		if sigma==None:
 			sigma = self.sigma
 		M_L = round(bunch_length/(4*sigma))
-		print('Approximate number of longitudinal modes = {}'.format(M_L))
 		return M_L
-
 
 	def incoherent_rad_omega(self,tj,sigma,omega,bunch_length,omega1=None):
 		if omega1 == None:
@@ -99,7 +114,8 @@ class Temporal:
 		
 						
 #---------------------------------------------------------------------------------------------------
-
+### 								PLOTTING FUNCTIONS											 ###
+#---------------------------------------------------------------------------------------------------
 
 def plot_graph(data_dicts,fig_name,title,xlabel,ylabel,savefig_name=None,show=True,scatter=False):
 	fig = plt.figure(fig_name)
@@ -142,7 +158,8 @@ def plot_subplots(data_dicts,fig_name,title,small_title,xlabel,savefig_name=None
 		
 		
 #---------------------------------------------------------------------------------------------------
-
+### 								SUBROUTINES OF MAIN											 ###
+#---------------------------------------------------------------------------------------------------
 
 temp = Temporal(sigma=2,omega=6)
 
@@ -154,7 +171,7 @@ def SHOW_COHERENT_RADIATION():
 				'E/e$_0$','coherent_radiation')
 	
 	
-def SHOW_INCOHERENT_RADIATION(num_pulses,bunch_length=100,subplots=True,plot_superposition=True,plot_intensity=True):
+def SHOW_INCOHERENT_RADIATION(num_pulses,bunch_length=100,subplots=True,plot_superposition=True,plot_intensity=True,print_mode_num=True):
 	
 	incoherent_vals_list = [temp.model_incoherent_rad_once(bunch_length) for i in range(num_pulses)]
 	if subplots == True:
@@ -173,7 +190,10 @@ def SHOW_INCOHERENT_RADIATION(num_pulses,bunch_length=100,subplots=True,plot_sup
 					'Incoherent Radiation: Intensity profile for {} pulses'.format(num_pulses),
 					'time','intensity','intensity_incoherent_radiation_{}_pulses'.format(num_pulses))
 	
-	temp.get_num_l_modes(bunch_length)
+	if print_mode_num == True:
+		print('Approximate number of longitudinal modes = {}'.format(temp.get_num_l_modes(bunch_length)))
+	
+	return {'superposition_pulses':superposition_pulses,'intensity':intensity}
 
 
 def INCOHERENT_AVERAGE_INTENSITY_VS_NUM_SOURCES(bunch_length=100):
@@ -196,6 +216,28 @@ def INCOHERENT_AVERAGE_INTENSITY_VS_NUM_SOURCES(bunch_length=100):
 					'number of sources','average intensity',
 					'average_intensity_vs_num_pulses',scatter=True)
 	
+
+def MONTE_CARLO_INTENSITY_TIME(num_trials,num_pulses=100,bunch_length=100):
+	for i in range(num_trials):
+		print('Trial number: {}/{}'.format(i+1,num_trials))
+		intensity = SHOW_INCOHERENT_RADIATION(num_pulses,bunch_length,False,False,False,False)['intensity']
+		if i == 0:
+			intensity_vals = np.zeros(shape=len(intensity['y_vals']))
+			time_vals = intensity['x_vals']
+		intensity_vals += (intensity['y_vals'])
+	average_intensity_vals = intensity_vals / 50
+	plot_dict = {
+				'x_vals':time_vals,
+				'y_vals':average_intensity_vals,
+				'label':None
+				}
+	plot_graph([plot_dict],'Monte Carlo Trialed Average Intensity Profile in Time Domain',
+					'Average Intensity vs Time',
+					'time ','simulated average intensity',
+					'monte_carlo_time_average_intensity_{}_trials'.format(num_trials),scatter=False)
+	with open('monte_carlo_time_average_intensity_{}_trials.pickle'.format(num_trials), 'wb') as f:
+			pickle.dump(plot_dict,f)
+										
 	
 def SHOW_INCOHERENT_RADIATION_OMEGA(num_pulses,bunch_length=100,plot_superposition=True,plot_intensity=True):
 	
@@ -207,21 +249,40 @@ def SHOW_INCOHERENT_RADIATION_OMEGA(num_pulses,bunch_length=100,plot_superpositi
 					'Incoherent Radiation: Superposition of {} pulses in terms of \u03C9'.format(num_pulses),
 					'\u03C9 - \u03C9$_1$','E/e$_0$','omega_incoherent_radiation_superposition_{}_pulses'.format(num_pulses))
 	#'E\u03C3/e$_0\sqrt{\u03C0}$'
-	intensity = temp.get_intensity(superposition_pulses_omega)
+	intensity_omega = temp.get_intensity(superposition_pulses_omega)
 	if plot_intensity == True:
-		plot_graph([intensity],'Incoherent Radiation Intensity Spectrum',
+		plot_graph([intensity_omega],'Incoherent Radiation Intensity Spectrum',
 					'Incoherent Radiation: Intensity spectrum for {} pulses in terms of \u03C9'.format(num_pulses),
 					'\u03C9 - \u03C9$_1$','P(\u03C9)','omega_intensity_incoherent_radiation_{}_pulses'.format(num_pulses))
 	
 	temp.get_num_l_modes(bunch_length)
+	return {'superposition_pulses':superposition_pulses_omega,'intensity':intensity_omega}
+					
+					
+def MONTE_CARLO_INTENSITY_OMEGA(num_trials,num_pulses=100,bunch_length=100):
+	for i in range(num_trials):
+		print('Trial number: {}/{}'.format(i+1,num_trials))
+		intensity = SHOW_INCOHERENT_RADIATION_OMEGA(num_pulses,bunch_length,False,False)['intensity']
+		if i == 0:
+			intensity_vals = np.zeros(shape=len(intensity['y_vals']))
+			time_vals = intensity['x_vals']
+		intensity_vals += (intensity['y_vals'])
+	average_intensity_vals = intensity_vals / 50
+	plot_dict = {
+				'x_vals':time_vals,
+				'y_vals':average_intensity_vals,
+				'label':None
+				}
+	with open('monte_carlo_frequency_average_intensity_{}_trials.pickle'.format(num_trials), 'wb') as f:
+			pickle.dump(plot_dict,f)
+	plot_graph([plot_dict],'Monte Carlo Trialed Average Intensity Profile in Frequency Domain',
+					'Average Intensity Spectrum',
+					'\u03C9 - \u03C9$_1$','simulated average intensity',
+					'monte_carlo_frequency_average_intensity_{}_trials'.format(num_trials),scatter=False)	
 		
 
 #---------------------------------------------------------------------------------------------------
 	
 	
 if __name__ == '__main__':
-	#SHOW_COHERENT_RADIATION()
-	SHOW_INCOHERENT_RADIATION(100,subplots=True,plot_superposition=True,plot_intensity=True)
-	#INCOHERENT_AVERAGE_INTENSITY_VS_NUM_SOURCES()
-	SHOW_INCOHERENT_RADIATION_OMEGA(100,plot_superposition=True,plot_intensity=True)
-
+	main()
