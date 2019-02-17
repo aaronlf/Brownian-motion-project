@@ -26,8 +26,8 @@ def main():
 	#SHOW_INCOHERENT_RADIATION(100,subplots=True,plot_superposition=True,plot_intensity=True)
 	#INCOHERENT_AVERAGE_INTENSITY_VS_NUM_SOURCES()
 	#SHOW_INCOHERENT_RADIATION_OMEGA(100,plot_superposition=True,plot_intensity=True)
-	MONTE_CARLO_INTENSITY_TIME(num_trials=1,num_pulses=500,bunch_length=100)
-	MONTE_CARLO_INTENSITY_OMEGA(num_trials=1,num_pulses=500,bunch_length=100)
+	MONTE_CARLO_INTENSITY_TIME(num_trials=500,num_pulses=100,bunch_length=100,show_result=False)
+	MONTE_CARLO_INTENSITY_OMEGA(num_trials=500,num_pulses=100,bunch_length=100,show_result=False)
 	
 	
 #---------------------------------------------------------------------------------------------------
@@ -217,7 +217,7 @@ def INCOHERENT_AVERAGE_INTENSITY_VS_NUM_SOURCES(bunch_length=100):
 					'average_intensity_vs_num_pulses',scatter=True)
 	
 
-def MONTE_CARLO_INTENSITY_TIME(num_trials,num_pulses=100,bunch_length=100):
+def MONTE_CARLO_INTENSITY_TIME(num_trials,num_pulses=100,bunch_length=100,show_result=True):
 	for i in range(num_trials):
 		print('Trial number: {}/{}'.format(i+1,num_trials))
 		intensity = SHOW_INCOHERENT_RADIATION(num_pulses,bunch_length,False,False,False,False)['intensity']
@@ -231,12 +231,14 @@ def MONTE_CARLO_INTENSITY_TIME(num_trials,num_pulses=100,bunch_length=100):
 				'y_vals':average_intensity_vals,
 				'label':None
 				}
+	with open('monte_carlo_time_average_intensity_{}_trials.pickle'.format(num_trials), 'wb') as f:
+			pickle.dump(plot_dict,f)
 	plot_graph([plot_dict],'Monte Carlo Trialed Average Intensity Profile in Time Domain',
 					'Average Intensity vs Time',
 					'time ','simulated average intensity',
-					'monte_carlo_time_average_intensity_{}_trials'.format(num_trials),scatter=False)
-	with open('monte_carlo_time_average_intensity_{}_trials.pickle'.format(num_trials), 'wb') as f:
-			pickle.dump(plot_dict,f)
+					'monte_carlo_time_average_intensity_{}_trials'.format(num_trials),
+					show=show_result,scatter=False)
+	
 										
 	
 def SHOW_INCOHERENT_RADIATION_OMEGA(num_pulses,bunch_length=100,plot_superposition=True,plot_intensity=True):
@@ -259,7 +261,7 @@ def SHOW_INCOHERENT_RADIATION_OMEGA(num_pulses,bunch_length=100,plot_superpositi
 	return {'superposition_pulses':superposition_pulses_omega,'intensity':intensity_omega}
 					
 					
-def MONTE_CARLO_INTENSITY_OMEGA(num_trials,num_pulses=100,bunch_length=100):
+def MONTE_CARLO_INTENSITY_OMEGA(num_trials,num_pulses=100,bunch_length=100,show_result=True):
 	for i in range(num_trials):
 		print('Trial number: {}/{}'.format(i+1,num_trials))
 		intensity = SHOW_INCOHERENT_RADIATION_OMEGA(num_pulses,bunch_length,False,False)['intensity']
@@ -278,7 +280,8 @@ def MONTE_CARLO_INTENSITY_OMEGA(num_trials,num_pulses=100,bunch_length=100):
 	plot_graph([plot_dict],'Monte Carlo Trialed Average Intensity Profile in Frequency Domain',
 					'Average Intensity Spectrum',
 					'\u03C9 - \u03C9$_1$','simulated average intensity',
-					'monte_carlo_frequency_average_intensity_{}_trials'.format(num_trials),scatter=False)	
+					'monte_carlo_frequency_average_intensity_{}_trials'.format(num_trials),
+					show=show_result,scatter=False)	
 		
 
 #---------------------------------------------------------------------------------------------------
