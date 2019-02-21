@@ -26,8 +26,8 @@ def main():
 	#SHOW_INCOHERENT_RADIATION(100,subplots=True,plot_superposition=True,plot_intensity=True)
 	#INCOHERENT_AVERAGE_INTENSITY_VS_NUM_SOURCES()
 	#SHOW_INCOHERENT_RADIATION_OMEGA(100,plot_superposition=True,plot_intensity=True)
-	MONTE_CARLO_INTENSITY_TIME(num_trials=500,num_pulses=100,bunch_length=100,show_result=False)
-	MONTE_CARLO_INTENSITY_OMEGA(num_trials=500,num_pulses=100,bunch_length=100,show_result=False)
+	MONTE_CARLO_INTENSITY_TIME(num_trials=500,num_pulses=100,bunch_length=100,show_result=True)
+	MONTE_CARLO_INTENSITY_OMEGA(num_trials=500,num_pulses=100,bunch_length=100,show_result=True)
 	
 	
 #---------------------------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ class Temporal:
 		return {'x_vals':time_vals,'y_vals':e_vals,'label':'\u03C3 = {}, \u03C9 = {}'.format(sigma,omega)}
 
 	def incoherent_rad(self,t,tj,sigma,omega,bunch_length):
-		return np.exp(-((t-tj)**2)/(4*(sigma**2))) * np.cos(omega*(t-tj))
+		return (np.exp((-(t-tj)**2)/(4*(sigma**2)))) * np.cos(omega*(t-tj))
 	
 	def model_incoherent_rad_once(self,bunch_length,sigma=None,omega=None):
 		if sigma == None:
@@ -160,8 +160,6 @@ def plot_subplots(data_dicts,fig_name,title,small_title,xlabel,savefig_name=None
 #---------------------------------------------------------------------------------------------------
 ### 								SUBROUTINES OF MAIN											 ###
 #---------------------------------------------------------------------------------------------------
-
-temp = Temporal(sigma=2,omega=6)
 
 
 def SHOW_COHERENT_RADIATION():
@@ -288,4 +286,5 @@ def MONTE_CARLO_INTENSITY_OMEGA(num_trials,num_pulses=100,bunch_length=100,show_
 	
 	
 if __name__ == '__main__':
+	temp = Temporal(sigma=2,omega=6)
 	main()
