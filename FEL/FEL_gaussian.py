@@ -22,12 +22,12 @@ plt.rcParams["figure.figsize"] = fig_size
 #---------------------------------------------------------------------------------------------------
 
 def main():
-	#SHOW_COHERENT_RADIATION()
+	SHOW_COHERENT_RADIATION()
 	#SHOW_INCOHERENT_RADIATION(100,subplots=True,plot_superposition=True,plot_intensity=True)
 	#INCOHERENT_AVERAGE_INTENSITY_VS_NUM_SOURCES()
 	#SHOW_INCOHERENT_RADIATION_OMEGA(100,plot_superposition=True,plot_intensity=True)
-	MONTE_CARLO_INTENSITY_TIME(num_trials=500,num_pulses=100,bunch_length=100,show_result=True)
-	MONTE_CARLO_INTENSITY_OMEGA(num_trials=500,num_pulses=100,bunch_length=100,show_result=True)
+	#MONTE_CARLO_INTENSITY_TIME(num_trials=500,num_pulses=100,bunch_length=100,show_result=True)
+	#MONTE_CARLO_INTENSITY_OMEGA(num_trials=500,num_pulses=100,bunch_length=100,show_result=True)
 	
 	
 #---------------------------------------------------------------------------------------------------
@@ -163,8 +163,8 @@ def plot_subplots(data_dicts,fig_name,title,small_title,xlabel,savefig_name=None
 
 
 def SHOW_COHERENT_RADIATION():
-	coherent_vals0 = temp.model_coherent_rad_once()
-	coherent_vals1 = temp.model_coherent_rad_once()
+	coherent_vals0 = temp.model_coherent_rad_once(sigma=2)
+	coherent_vals1 = temp.model_coherent_rad_once(sigma=1)
 	plot_graph([coherent_vals0,coherent_vals1],'Coherent Radiation','Coherent Radiation','t',
 				'E/e$_0$','coherent_radiation')
 	
