@@ -1,0 +1,2 @@
+#### NOTE FOR MONTE CARLO TRIALS IN TIME DOMAIN
+There was a bug in the old Monte Carlo trialed simulations, so the image with 100 trials has double the average intensity magnitude it should have. This was fixed in the newest simulation of 500 trials.
