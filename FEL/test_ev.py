@@ -53,7 +53,7 @@ def MONTE_CARLO_TEST_TIME(num_trials,num_pulses=100,bunch_length=100,show_result
 				'label':None
 				}
 				
-	with open(f'test_e_field_N={num_pulses}_T={bunch_length}_trials={num_trials}pickle', 'wb') as f1:
+	with open(f'test_e_field_N={num_pulses}_T={bunch_length}_trials={num_trials}.pickle', 'wb') as f1:
 			pickle.dump(plot_dict_e,f1)
 	with open(f'test_intensity_N={num_pulses}_T={bunch_length}_trials={num_trials}.pickle', 'wb') as f2:
 			pickle.dump(plot_dict_i,f2)
