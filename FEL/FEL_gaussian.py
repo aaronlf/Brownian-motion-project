@@ -24,15 +24,17 @@ plt.rcParams["figure.figsize"] = fig_size
 
 def main():
 	#SHOW_COHERENT_RADIATION()
-	#SHOW_INCOHERENT_RADIATION(100,subplots=True,plot_superposition=True,plot_intensity=True)
+	#SHOW_INCOHERENT_RADIATION(num_pulses=100,bunch_length=100,subplots=True,plot_superposition=True,plot_intensity=True)
 	#INCOHERENT_AVERAGE_INTENSITY_VS_NUM_SOURCES()
 	#SHOW_INCOHERENT_RADIATION_OMEGA(100,plot_superposition=True,plot_intensity=True)
-	#MONTE_CARLO_INTENSITY_TIME(num_trials=500,num_pulses=100,bunch_length=100,show_result=True)
+	MONTE_CARLO_INTENSITY_TIME(num_trials=100,num_pulses=100,bunch_length=24,show_result=True)
 	#MONTE_CARLO_INTENSITY_OMEGA(num_trials=500,num_pulses=100,bunch_length=100,show_result=True)
-	SHOW_AUTOCORRELATION_TIME(t=0,num_pulses=100,bunch_length=100,plot_e=True,plot_intensity=True)
-	MONTE_CARLO_AUTOCORRELATION_TIME(num_trials=500,t=0,num_pulses=100,bunch_length=100,show_result=True)
-	SHOW_AUTOCORRELATION_FREQUENCY(delta_omega=0,num_pulses=100,bunch_length=100,plot_e=True,plot_intensity=True)
-	MONTE_CARLO_AUTOCORRELATION_FREQUENCY(num_trials=500,delta_omega=0,num_pulses=100,bunch_length=100,show_result=True)
+	#SHOW_AUTOCORRELATION_TIME(t=0,num_pulses=100,bunch_length=100,plot_e=True,plot_intensity=True)
+	#MONTE_CARLO_AUTOCORRELATION_TIME(num_trials=500,t=0,num_pulses=100,bunch_length=100,show_result=True)
+	
+	#SHOW_AUTOCORRELATION_FREQUENCY(delta_omega=0,num_pulses=100,bunch_length=100,plot_e=True,plot_intensity=True)
+	
+	#MONTE_CARLO_AUTOCORRELATION_FREQUENCY(num_trials=500,delta_omega=0,num_pulses=100,bunch_length=100,show_result=True)
 	
 #---------------------------------------------------------------------------------------------------
 ### 					CLASS TO DEMONSTRATE TEMPORAL COHERENCE/INCOHERECE 						 ###
@@ -66,7 +68,7 @@ class Temporal:
 			sigma = self.sigma
 		if omega == None:
 			omega = self.omega
-		time_vals = np.linspace(-(bunch_length*0.5)-(4*sigma),(bunch_length*0.5)+(4*sigma),5000)
+		time_vals = np.linspace(-(bunch_length*0.5)-(4*sigma),(bunch_length*0.5)+(4*sigma),500)
 		e_vals = []
 		tj = random.uniform(-(bunch_length*0.5),(bunch_length*0.5))
 		for t in time_vals:
