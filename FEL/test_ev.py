@@ -13,22 +13,58 @@ class Test_EV(FEL.Temporal):
 	'''
 	def incoherent_rad(self,t,tj,sigma,omega,bunch_length):
 		return np.exp((-(t-tj)**2))
-
+	
+	def model_incoherent_rad_once(self,bunch_length,sigma=None,omega=None):
+		if sigma == None:
+			sigma = self.sigma
+		if omega == None:
+			omega = self.omega
+		time_vals = np.linspace(-(bunch_length*0.5)-(4*sigma),(bunch_length*0.5)+(4*sigma),500)
+		e_vals = []
+		i_vals = []
+		tj = random.uniform(-(bunch_length*0.5),(bunch_length*0.5))
+		for t in time_vals:
+			E_field = self.incoherent_rad(t,tj,sigma,omega,bunch_length)
+			e_vals.append(E_field)
+			i_vals.append(E_field*E_field)
+		E_dict = {'x_vals':time_vals,'y_vals':e_vals,'label':'\u03C3 = {}, \u03C9 = {}'.format(sigma,omega)}
+		I_dict = {'x_vals':time_vals,'y_vals':i_vals,'label':'\u03C3 = {}, \u03C9 = {}'.format(sigma,omega)}
+		return {'E_dict':E_dict,'I_dict':I_dict}
+	
+	def get_superposition(self,incoherent_vals_list):
+		e_vals = np.zeros(shape=len(incoherent_vals_list[0]['E_dict']['y_vals']))
+		i_vals = np.zeros(shape=len(incoherent_vals_list[0]['E_dict']['y_vals']))
+		for incoherent_vals in incoherent_vals_list:
+			e_vals += np.array(incoherent_vals['E_dict']['y_vals'])
+			i_vals += np.array(incoherent_vals['I_dict']['y_vals'])
+		return {
+				'E_dict':{
+						'x_vals':incoherent_vals_list[0]['E_dict']['x_vals'],
+						'y_vals':e_vals,
+						'label':None
+						},
+				'I_dict':{
+						'x_vals':incoherent_vals_list[0]['E_dict']['x_vals'], #doesn't matter, same amount of x values
+						'y_vals':i_vals,
+						'label':None
+						}
+				}
 
 test = Test_EV(sigma=2,omega=6)
 
 
-def SHOW_INCOHERENT_RADIATION(num_pulses,bunch_length=100):
+def SIMULATE_INCOHERENT_RADIATION(num_pulses,bunch_length=100):
 	incoherent_vals_list = [test.model_incoherent_rad_once(bunch_length) for i in range(num_pulses)]
 	superposition_pulses = test.get_superposition(incoherent_vals_list)
-	intensity = test.get_intensity(superposition_pulses)
-	return {'superposition_pulses':superposition_pulses,'intensity':intensity}
+	e_field = superposition_pulses['E_dict']
+	intensity = superposition_pulses['I_dict']
+	return {'e_field':e_field,'intensity':intensity}
 
 def MONTE_CARLO_TEST_TIME(num_trials,num_pulses=100,bunch_length=100,show_result=True):
 	for i in range(num_trials):
 		print('Trial number: {}/{}'.format(i+1,num_trials))
-		incoherent_radiation = SHOW_INCOHERENT_RADIATION(num_pulses,bunch_length)
-		e_field = incoherent_radiation['superposition_pulses']
+		incoherent_radiation = SIMULATE_INCOHERENT_RADIATION(num_pulses,bunch_length)
+		e_field = incoherent_radiation['e_field']
 		intensity = incoherent_radiation['intensity']
 		
 		if i == 0:
