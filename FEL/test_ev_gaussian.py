@@ -5,15 +5,16 @@ import time
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
-from FEL_uniform import FEL_Uniform
+from FEL_gaussian import FEL_Gaussian
 from plotting import Plotting
 
-"""
-Note that in this test script, the intensity is calclated for each pulse, instead of being
-calculated from the result of a sum of pulses (superposition of E-fields).
-"""
 
-class Test_EV(FEL_Uniform):
+#===================================================================================================
+### 					TEST THE EFFECTS OF MAKING THE PULSES GAUSSIAN 							###
+#===================================================================================================
+
+
+class Test_EV_Gaussian(FEL_Gaussian):
 	'''Redefining the function for E-field to be that of the simple test as outlined in work
 	'''
 	def incoherent_rad(self,t,tj,sigma,omega,bunch_length):
@@ -27,7 +28,7 @@ class Test_EV(FEL_Uniform):
 		time_vals = np.linspace(-(bunch_length*0.5)-(4*sigma),(bunch_length*0.5)+(4*sigma),500)
 		e_vals = []
 		i_vals = []
-		tj = random.uniform(-(bunch_length*0.5),(bunch_length*0.5))
+		tj = np.random.normal(0,(bunch_length*0.5)/(np.pi*2))
 		for t in time_vals:
 			E_field = self.incoherent_rad(t,tj,sigma,omega,bunch_length)
 			e_vals.append(E_field)
@@ -68,15 +69,16 @@ def MONTE_CARLO_TEST_TIME(num_trials,num_pulses=100,bunch_length=100,show_result
 		print('Trial number: {}/{}'.format(i+1,num_trials))
 		incoherent_radiation = SIMULATE_INCOHERENT_RADIATION(num_pulses,bunch_length)
 		e_field = incoherent_radiation['e_field']
-		intensity = incoherent_radiation['intensity']
+		intensity = incoherent_radiation['intensity']	
 		if i == 0:
 			e_field_vals = np.zeros(shape=len(e_field['y_vals']))
 			intensity_vals = np.zeros(shape=len(intensity['y_vals']))
-			time_vals = e_field['x_vals']	
+			time_vals = e_field['x_vals']
+			
 		e_field_vals += (e_field['y_vals'])
-		intensity_vals += (intensity['y_vals'])
+		intensity_vals += (intensity['y_vals'])	
 	average_e_field_vals = e_field_vals / num_trials
-	average_intensity_vals = intensity_vals / num_trials
+	average_intensity_vals = intensity_vals / num_trials	
 	plot_dict_e = {
 				'x_vals':time_vals,
 				'y_vals':average_e_field_vals,
@@ -86,7 +88,7 @@ def MONTE_CARLO_TEST_TIME(num_trials,num_pulses=100,bunch_length=100,show_result
 				'x_vals':time_vals,
 				'y_vals':average_intensity_vals,
 				'label':None
-				}		
+				}			
 	with open(f'test_e_field_N={num_pulses}_T={bunch_length}_trials={num_trials}.pickle', 'wb') as f1:
 			pickle.dump(plot_dict_e,f1)
 	with open(f'test_intensity_N={num_pulses}_T={bunch_length}_trials={num_trials}.pickle', 'wb') as f2:
@@ -102,18 +104,18 @@ def MONTE_CARLO_TEST_TIME(num_trials,num_pulses=100,bunch_length=100,show_result
 	Plotting.plot_graph([plot_dict_e],'Monte Carlo Test for EV. Shown: Average E-Field in Time Domain',
 					f'Average E-field vs Time, N = {num_pulses}, T = {bunch_length}, Number of trials = {num_trials}',
 					'time ','simulated average E-field',
-					f'test_e_field_N={num_pulses}_T={bunch_length}_trials={num_trials}',
+					f'gaussian_test_e_field_N={num_pulses}_T={bunch_length}_trials={num_trials}',
 					show=show_result,scatter=False)
 	Plotting.plot_graph([plot_dict_i],'Monte Carlo Test for EV. Shown: Average Intensity in Time Domain',
 					f'Average Intensity vs Time, N = {num_pulses}, T = {bunch_length}, Number of trials = {num_trials}',
 					'time ','simulated average intensity',
-					f'test_intensity_N={num_pulses}_T={bunch_length}_trials={num_trials}',
+					f'gaussian_test_intensity_N={num_pulses}_T={bunch_length}_trials={num_trials}',
 					show=show_result,scatter=False)
 	
-	
-test = Test_EV(sigma=2,omega=6)
+
+test = Test_EV_Gaussian(sigma=2,omega=6)	
 				
-MONTE_CARLO_TEST_TIME(num_trials=500,num_pulses=100,bunch_length=100,show_result=True)
-MONTE_CARLO_TEST_TIME(num_trials=500,num_pulses=150,bunch_length=100,show_result=True)
-MONTE_CARLO_TEST_TIME(num_trials=500,num_pulses=200,bunch_length=70,show_result=True)
-MONTE_CARLO_TEST_TIME(num_trials=500,num_pulses=60,bunch_length=130,show_result=True)
+MONTE_CARLO_TEST_TIME(num_trials=100,num_pulses=100,bunch_length=100,show_result=True)
+MONTE_CARLO_TEST_TIME(num_trials=100,num_pulses=150,bunch_length=100,show_result=True)
+MONTE_CARLO_TEST_TIME(num_trials=100,num_pulses=200,bunch_length=70,show_result=True)
+MONTE_CARLO_TEST_TIME(num_trials=100,num_pulses=60,bunch_length=130,show_result=True)
