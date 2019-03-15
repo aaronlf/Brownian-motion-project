@@ -5,11 +5,13 @@ import time
 import numpy as np
 import pickle
 from plotting import Plotting
-from FEL_uniform import FEL_Uniform
-from FEL_gaussian import FEL_Gaussian
+from FEL_uniform import FEL_Uniform,FEL_Uniform_Complex
+from FEL_gaussian import FEL_Gaussian,FEL_Gaussian_Complex
 
 uniform_pulse_FEL = FEL_Uniform(sigma=2,omega=6)
 gaussian_pulse_FEL = FEL_Gaussian(sigma=2,omega=6)
+uniform_pulse_complex_FEL = FEL_Uniform_Complex(sigma=2,omega=6)
+gaussian_pulse_complex_FEL = FEL_Gaussian_Complex(sigma=2,omega=6)
 
 
 #---------------------------------------------------------------------------------------------------
@@ -38,6 +40,30 @@ def main():
 	#monte_carlo_intensity_omega(FEL,num_trials=500,num_pulses=100,bunch_length=100,show_result=True)
 	#show_autocorrelation_time(FEL,t=0,num_pulses=100,bunch_length=100,plot_e=True,plot_intensity=True)
 	#monte_carlo_autocorrelation_time(FEL,num_trials=10,t=0,num_pulses=100,bunch_length=100,show_result=True)
+	#show_autocorrelation_freq(FEL,delta_omega=0,num_pulses=100,bunch_length=100,plot_e=True,plot_intensity=True)
+	#monte_carlo_autocorrelation_freq(FEL,num_trials=500,delta_omega=0,num_pulses=100,bunch_length=100,show_result=True)
+	
+	FEL = uniform_pulse_complex_FEL
+	#show_coherent_radiation(FEL)
+	#show_incoherent_radiation(FEL,num_pulses=100,bunch_length=100,subplots=True,plot_superposition=True,plot_intensity=True)
+	#incoherent_average_intensity_vs_num_sources(FEL)
+	#monte_carlo_intensity_time(FEL,num_trials=500,num_pulses=100,bunch_length=100,show_result=True)
+	#show_incoherent_radiation_omega(FEL,100,plot_superposition=True,plot_intensity=True)
+	#monte_carlo_intensity_omega(FEL,num_trials=500,num_pulses=100,bunch_length=100,show_result=True)
+	#show_autocorrelation_time(FEL,t=0,num_pulses=100,bunch_length=100,plot_e=True,plot_intensity=True)
+	monte_carlo_autocorrelation_time(FEL,num_trials=500,t=0,num_pulses=100,bunch_length=100,show_result=True)
+	#show_autocorrelation_freq(FEL,delta_omega=0,num_pulses=100,bunch_length=100,plot_e=True,plot_intensity=True)
+	#monte_carlo_autocorrelation_freq(FEL,num_trials=500,delta_omega=0,num_pulses=100,bunch_length=100,show_result=True)
+	
+	FEL = gaussian_pulse_complex_FEL
+	#show_coherent_radiation(FEL)
+	#show_incoherent_radiation(FEL,num_pulses=100,bunch_length=100,subplots=True,plot_superposition=True,plot_intensity=True)
+	#incoherent_average_intensity_vs_num_sources(FEL)
+	#monte_carlo_intensity_time(FEL,num_trials=500,num_pulses=100,bunch_length=100,show_result=True)
+	#show_incoherent_radiation_omega(FEL,100,plot_superposition=True,plot_intensity=True)
+	#monte_carlo_intensity_omega(FEL,num_trials=500,num_pulses=100,bunch_length=100,show_result=True)
+	#show_autocorrelation_time(FEL,t=0,num_pulses=100,bunch_length=100,plot_e=True,plot_intensity=True)
+	#monte_carlo_autocorrelation_time(FEL,num_trials=500,t=0,num_pulses=100,bunch_length=100,show_result=True)
 	#show_autocorrelation_freq(FEL,delta_omega=0,num_pulses=100,bunch_length=100,plot_e=True,plot_intensity=True)
 	#monte_carlo_autocorrelation_freq(FEL,num_trials=500,delta_omega=0,num_pulses=100,bunch_length=100,show_result=True)
 	
@@ -100,7 +126,7 @@ def monte_carlo_intensity_time(FEL,num_trials,num_pulses=100,bunch_length=100,sh
 		print('Trial number: {}/{}'.format(i+1,num_trials))
 		intensity = show_incoherent_radiation(FEL,num_pulses,bunch_length,False,False,False,False)['intensity']
 		if i == 0:
-			intensity_vals = np.zeros(shape=len(intensity['y_vals']))
+			intensity_vals = np.zeros(shape=len(intensity['y_vals']),dtype=complex)
 			time_vals = intensity['x_vals']
 		intensity_vals += (intensity['y_vals'])
 	average_intensity_vals = intensity_vals / num_trials
@@ -140,7 +166,7 @@ def monte_carlo_intensity_omega(FEL,num_trials,num_pulses=100,bunch_length=100,s
 		print('Trial number: {}/{}'.format(i+1,num_trials))
 		intensity = show_incoherent_radiation_omega(FEL,num_pulses,bunch_length,False,False)['intensity']
 		if i == 0:
-			intensity_vals = np.zeros(shape=len(intensity['y_vals']))
+			intensity_vals = np.zeros(shape=len(intensity['y_vals']),dtype=complex)
 			time_vals = intensity['x_vals']
 		intensity_vals += (intensity['y_vals'])
 	average_intensity_vals = intensity_vals / num_trials
@@ -179,8 +205,8 @@ def monte_carlo_autocorrelation_time(FEL,num_trials,t=0,num_pulses=100,bunch_len
 		c1_data = autocorrelation_dicts['c1_dict']
 		c2_data = autocorrelation_dicts['c2_dict']
 		if i == 0:
-			c1_vals = np.zeros(shape=len(c1_data['y_vals']))
-			c2_vals = np.zeros(shape=len(c2_data['y_vals']))
+			c1_vals = np.zeros(shape=len(c1_data['y_vals']),dtype=complex)
+			c2_vals = np.zeros(shape=len(c2_data['y_vals']),dtype=complex)
 			tau_vals = c1_data['x_vals']
 		c1_vals += (c1_data['y_vals'])
 		c2_vals += (c2_data['y_vals'])
@@ -233,8 +259,8 @@ def monte_carlo_autocorrelation_freq(FEL,num_trials,delta_omega=0,num_pulses=100
 		c1_data = autocorrelation_dicts['c1_dict']
 		c2_data = autocorrelation_dicts['c2_dict']
 		if i == 0:
-			c1_vals = np.zeros(shape=len(c1_data['y_vals']))
-			c2_vals = np.zeros(shape=len(c2_data['y_vals']))
+			c1_vals = np.zeros(shape=len(c1_data['y_vals']),dtype=complex)
+			c2_vals = np.zeros(shape=len(c2_data['y_vals']),dtype=complex)
 			d_omega_vals = c1_data['x_vals']
 		c1_vals += (c1_data['y_vals'])
 		c2_vals += (c2_data['y_vals'])	

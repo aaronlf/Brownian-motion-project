@@ -43,3 +43,11 @@ class FEL_Gaussian(FEL_Uniform):
 			e_vals.append(self.incoherent_rad_omega(tj,sigma,omega,bunch_length))
 		delta_omega_vals = omega_vals - omega1
 		return {'x_vals':delta_omega_vals,'y_vals':e_vals,'label':'\u03C3 = {}, \u03C9$_1 = {}'.format(sigma,omega1)}
+
+
+class FEL_Gaussian_Complex(FEL_Gaussian):
+	
+	def incoherent_rad(self,t,tj,sigma,omega,bunch_length):
+		# Models (1.19) in notes from Lampros A.A Nikolopoulos
+		X = 1 + 1j/np.sqrt(3)
+		return np.exp( (-X*((t-tj)**2))/(4*(sigma**2)) + (1j*omega*(t-tj) ))

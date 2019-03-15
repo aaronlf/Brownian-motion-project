@@ -51,7 +51,7 @@ class FEL_Uniform:
 		return {'x_vals':time_vals,'y_vals':e_vals,'label':'\u03C3 = {}, \u03C9 = {}'.format(sigma,omega)}
 		
 	def get_superposition(self,input_vals_list):
-		output_vals = np.zeros(shape=len(input_vals_list[0]['y_vals']))
+		output_vals = np.zeros(shape=len(input_vals_list[0]['y_vals']),dtype=complex)
 		for input_vals in input_vals_list:
 			output_vals += np.array(input_vals['y_vals'])
 		return {
@@ -61,7 +61,9 @@ class FEL_Uniform:
 				}
 	
 	def get_intensity(self,e_superposition):
-		intensity_vals = e_superposition['y_vals'] ** 2
+		e_vals = e_superposition['y_vals']
+		conj_e_vals = np.conjugate(e_vals)
+		intensity_vals = abs(e_vals * conj_e_vals)
 		return {
 				'x_vals':e_superposition['x_vals'],
 				'y_vals':intensity_vals,
@@ -149,3 +151,15 @@ class FEL_Uniform:
 		c2_dict = {'x_vals':delta_omega_vals,'y_vals':c2_vals,'label':None}
 		return {'c1_dict':c1_dict,'c2_dict':c2_dict}
 
+class FEL_Uniform_Complex(FEL_Uniform):
+	
+	def incoherent_rad(self,t,tj,sigma,omega,bunch_length):
+		# Models (1.19) in notes from Lampros A.A Nikolopoulos
+		X = 1 + 1j/np.sqrt(3)
+		return np.exp( (-X*(t-tj)**2)/(4*(sigma**2)) + (1j*omega*tj) )
+	
+	def incoherent_rad_omega(self,tj,sigma,omega,bunch_length,omega1=None):
+		if omega1 == None:
+			omega1 = self.omega
+		sigma_FT = 1/(2*sigma)
+		return (np.exp(-((omega-omega1)**2)/(4*(sigma_FT**2))) * np.cos(omega*tj)) * (np.sqrt(np.pi)/sigma_FT) 
