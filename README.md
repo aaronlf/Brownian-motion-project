@@ -1,1 +1,2 @@
-# Brownian-motion-project
+# Final year project
+###Aaron Lalor-Fitzpatrick

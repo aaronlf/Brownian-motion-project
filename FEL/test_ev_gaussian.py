@@ -115,7 +115,7 @@ def MONTE_CARLO_TEST_TIME(num_trials,num_pulses=100,bunch_length=100,show_result
 
 test = Test_EV_Gaussian(sigma=2,omega=6)	
 				
-MONTE_CARLO_TEST_TIME(num_trials=100,num_pulses=100,bunch_length=100,show_result=True)
-MONTE_CARLO_TEST_TIME(num_trials=100,num_pulses=150,bunch_length=100,show_result=True)
-MONTE_CARLO_TEST_TIME(num_trials=100,num_pulses=200,bunch_length=70,show_result=True)
-MONTE_CARLO_TEST_TIME(num_trials=100,num_pulses=60,bunch_length=130,show_result=True)
+MONTE_CARLO_TEST_TIME(num_trials=1,num_pulses=100,bunch_length=100,show_result=True)
+MONTE_CARLO_TEST_TIME(num_trials=1,num_pulses=150,bunch_length=100,show_result=True)
+MONTE_CARLO_TEST_TIME(num_trials=1,num_pulses=200,bunch_length=70,show_result=True)
+MONTE_CARLO_TEST_TIME(num_trials=1,num_pulses=60,bunch_length=130,show_result=True)

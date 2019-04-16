@@ -15,9 +15,6 @@ from FEL_uniform import FEL_Uniform
 #---------------------------------------------------------------------------------------------------	
 	
 class FEL_Gaussian(FEL_Uniform):
-		
-	def incoherent_rad(self,t,tj,sigma,omega,bunch_length):
-		return (np.exp((-(t-tj)**2)/(4*(sigma**2)))) * np.cos(omega*(t-tj))
 	
 	def model_incoherent_rad_once(self,bunch_length,sigma=None,omega=None):
 		if sigma == None:
@@ -36,11 +33,11 @@ class FEL_Gaussian(FEL_Uniform):
 			sigma = self.sigma
 		if omega1 == None:
 			omega1 = self.omega
-		omega_vals = np.linspace(omega1-1,omega1+1,self.num_data_points)
+		omega_vals = np.linspace(omega1-10,omega1+10,self.num_data_points)
 		e_vals = []
 		tj = np.random.normal(0,(bunch_length*0.5)/(np.pi*2))
 		for omega in omega_vals:
-			e_vals.append(self.incoherent_rad_omega(tj,sigma,omega,bunch_length))
+			e_vals.append(self.incoherent_rad_omega(tj,sigma,omega,bunch_length,omega1))
 		delta_omega_vals = omega_vals - omega1
 		return {'x_vals':delta_omega_vals,'y_vals':e_vals,'label':'\u03C3 = {}, \u03C9$_1 = {}'.format(sigma,omega1)}
 
@@ -51,3 +48,12 @@ class FEL_Gaussian_Complex(FEL_Gaussian):
 		# Models (1.19) in notes from Lampros A.A Nikolopoulos
 		X = 1 + 1j/np.sqrt(3)
 		return np.exp( (-X*((t-tj)**2))/(4*(sigma**2)) + (1j*omega*(t-tj) ))
+	
+	def incoherent_rad_omega(self,tj,sigma,omega,bunch_length,omega1=None):
+		if omega1 == None:
+			omega1 = self.omega
+		X = 1 + 1j/np.sqrt(3)
+		first_term = np.sqrt((np.pi*4*self.sigma)/X)
+		second_term = np.exp(-((self.sigma**2)*(omega**2)/X))
+		third_term = np.exp(1j*(omega1+omega)*tj)
+		return first_term * second_term * third_term

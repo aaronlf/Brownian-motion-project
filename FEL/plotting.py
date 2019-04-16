@@ -20,7 +20,7 @@ plt.rcParams["figure.figsize"] = fig_size
 class Plotting:
 	
 	@staticmethod
-	def plot_graph(data_dicts,fig_name,title,xlabel,ylabel,savefig_name=None,show=True,scatter=False):
+	def plot_graph(data_dicts,fig_name,title,xlabel,ylabel,savefig_name=None,show=True,scatter=False,log=False):
 		fig = plt.figure(fig_name)
 		fig.suptitle(title)
 		ax = plt.subplot(111)
@@ -32,10 +32,12 @@ class Plotting:
 				ax.scatter(data_dict['x_vals'],data_dict['y_vals'],label=data_dict['label'])
 			else:
 				ax.plot(data_dict['x_vals'],data_dict['y_vals'],label=data_dict['label'])
+				if log == True:
+					ax.set_yscale('log')
 			if data_dict['label'] == None:
 				legend = False
 		if legend:
-			ax.legend(loc='upper center', bbox_to_anchor=(0.92, 1.00), shadow=True, ncol=1)
+			ax.legend(loc='best', bbox_to_anchor=(0.88, 1.00), shadow=True, ncol=1)
 		if savefig_name != None:
 			plt.savefig(savefig_name.format('.png'))
 		if show == True:
@@ -59,4 +61,27 @@ class Plotting:
 			plt.savefig(savefig_name.format('.png'))
 		if show == True:
 			plt.show()
-		
+	
+	@staticmethod
+	def scatter_and_plot(data_dicts,fig_name,title,xlabel,ylabel,savefig_name=None,show=True,log=False):
+		fig = plt.figure(fig_name)
+		fig.suptitle(title)
+		ax = plt.subplot(111)
+		ax.set_xlabel(xlabel)
+		ax.set_ylabel(ylabel)
+		legend = True
+		for data_dict in data_dicts:
+			if data_dict['scatter'] == True:
+				ax.scatter(data_dict['x_vals'],data_dict['y_vals'],label=data_dict['label'],c='red')
+			else:
+				ax.plot(data_dict['x_vals'],data_dict['y_vals'],label=data_dict['label'])
+				if log == True:
+					ax.set_yscale('log')
+			if data_dict['label'] == None:
+				legend = False
+		if legend:
+			ax.legend(loc='best', bbox_to_anchor=(0.88, 1.00), shadow=True, ncol=1)
+		if savefig_name != None:
+			plt.savefig(savefig_name.format('.png'))
+		if show == True:
+			plt.show()
